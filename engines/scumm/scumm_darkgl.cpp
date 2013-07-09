@@ -73,6 +73,8 @@ MIDIHOOK darkgl_MIDIHOOK = 0;
 Scumm::IMuse *darkgl_imuse = 0;
 byte *darkgl_soundbanks[8] = {0,0,0,0,0,0,0,0};
 
+void sysexHandler_darkgl(Scumm::Player *, const byte *, uint16);
+
 extern "C" DLLEXPORT void darkgl_scumm_init() {
 	g_system = new OSystem_Win32();
 	assert(g_system);
@@ -91,6 +93,7 @@ extern "C" DLLEXPORT void darkgl_scumm_init() {
 	darkgl_imuse = Scumm::IMuse::create(g_system, nativeMidiDriver, adlibMidiDriver);
 	darkgl_imuse->property(Scumm::IMuse::PROP_NATIVE_MT32, false);
 	darkgl_imuse->setMusicVolume(255);
+	darkgl_imuse->addSysexHandler(/*IMUSE_SYSEX_ID*/ 0x7D, sysexHandler_darkgl);
 }
 
 extern "C" DLLEXPORT void darkgl_scumm_set_midi_hook(MIDIHOOK hook) {
@@ -104,4 +107,8 @@ extern "C" DLLEXPORT void darkgl_scumm_midi_start(const void *sound) {
 
 extern "C" DLLEXPORT void darkgl_scumm_midi_stop() {
 	darkgl_imuse->stopAllSounds();
+}
+
+void sysexHandler_darkgl(Scumm::Player *player, const byte *msg, uint16 len) {
+	Scumm::sysexHandler_Scumm(player, msg, len);
 }
