@@ -148,7 +148,6 @@ obj/
 _ReSharper*/
 ipch/
 [Tt]est[Rr]esult*
-*.props
 *.bat
 *.tss
 dists/msvclibs/*
