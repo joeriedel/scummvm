@@ -148,13 +148,10 @@ obj/
 _ReSharper*/
 ipch/
 [Tt]est[Rr]esult*
-*.vcproj
-*.sln
-*.vsprops
 *.props
-*.vcxproj*
 *.bat
 *.tss
+dists/msvclibs/*
 
 #Ignore default Visual Studio build folders
 [Dd]ebug/
