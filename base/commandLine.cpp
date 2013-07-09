@@ -44,6 +44,7 @@
 
 #define DETECTOR_TESTING_HACK
 #define UPGRADE_ALL_TARGETS_HACK
+#define DISABLE_COMMAND_LINE
 
 namespace Base {
 
