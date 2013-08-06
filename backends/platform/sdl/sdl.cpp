@@ -156,38 +156,40 @@ void OSystem_SDL::initBackend() {
 
 	int graphicsManagerType = 0;
 
-//	if (_graphicsManager == 0) {
-//#ifdef USE_OPENGL
-//		if (ConfMan.hasKey("gfx_mode")) {
-//			Common::String gfxMode(ConfMan.get("gfx_mode"));
-//			bool use_opengl = false;
-//			const OSystem::GraphicsMode *mode = OpenGLSdlGraphicsManager::supportedGraphicsModes();
-//			int i = 0;
-//			while (mode->name) {
-//				if (scumm_stricmp(mode->name, gfxMode.c_str()) == 0) {
-//					_graphicsMode = i + _sdlModesCount;
-//					use_opengl = true;
-//				}
-//
-//				mode++;
-//				++i;
-//			}
-//
-//			// If the gfx_mode is from OpenGL, create the OpenGL graphics manager
-//			if (use_opengl) {
-//				_graphicsManager = new OpenGLSdlGraphicsManager(_eventSource);
-//				graphicsManagerType = 1;
-//			}
-//		}
-//#endif
-//		if (_graphicsManager == 0) {
-//			_graphicsManager = new SurfaceSdlGraphicsManager(_eventSource);
-//			graphicsManagerType = 0;
-//		}
-//	}
-//
-//	if (_savefileManager == 0)
-//		_savefileManager = new DefaultSaveFileManager();
+#if !defined(DARKGL)
+	if (_graphicsManager == 0) {
+#ifdef USE_OPENGL
+		if (ConfMan.hasKey("gfx_mode")) {
+			Common::String gfxMode(ConfMan.get("gfx_mode"));
+			bool use_opengl = false;
+			const OSystem::GraphicsMode *mode = OpenGLSdlGraphicsManager::supportedGraphicsModes();
+			int i = 0;
+			while (mode->name) {
+				if (scumm_stricmp(mode->name, gfxMode.c_str()) == 0) {
+					_graphicsMode = i + _sdlModesCount;
+					use_opengl = true;
+				}
+
+				mode++;
+				++i;
+			}
+
+			// If the gfx_mode is from OpenGL, create the OpenGL graphics manager
+			if (use_opengl) {
+				_graphicsManager = new OpenGLSdlGraphicsManager(_eventSource);
+				graphicsManagerType = 1;
+			}
+		}
+#endif
+		if (_graphicsManager == 0) {
+			_graphicsManager = new SurfaceSdlGraphicsManager(_eventSource);
+			graphicsManagerType = 0;
+		}
+	}
+#endif
+
+	if (_savefileManager == 0)
+		_savefileManager = new DefaultSaveFileManager();
 
 	if (_mixerManager == 0) {
 		_mixerManager = new SdlMixerManager();
@@ -196,48 +198,54 @@ void OSystem_SDL::initBackend() {
 		_mixerManager->init();
 	}
 
-//	if (_audiocdManager == 0) {
-//		// Audio CD support was removed with SDL 1.3
-//#if SDL_VERSION_ATLEAST(1, 3, 0)
-//		_audiocdManager = new DefaultAudioCDManager();
-//#else
-//		_audiocdManager = new SdlAudioCDManager();
-//#endif
-//
-//	}
-//
-//	// Setup a custom program icon.
-//	setupIcon();
-//
-//	_inited = true;
-//
-//	ModularBackend::initBackend();
-//
-//	// We have to initialize the graphics manager before the event manager
-//	// so the virtual keyboard can be initialized, but we have to add the
-//	// graphics manager as an event observer after initializing the event
-//	// manager.
-//	if (graphicsManagerType == 0)
-//		((SurfaceSdlGraphicsManager *)_graphicsManager)->initEventObserver();
-//#ifdef USE_OPENGL
-//	else if (graphicsManagerType == 1)
-//		((OpenGLSdlGraphicsManager *)_graphicsManager)->initEventObserver();
-//#endif
+#if !defined(DARKGL)
+	if (_audiocdManager == 0) {
+		// Audio CD support was removed with SDL 1.3
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+		_audiocdManager = new DefaultAudioCDManager();
+#else
+		_audiocdManager = new SdlAudioCDManager();
+#endif
+
+	}
+
+	// Setup a custom program icon.
+	setupIcon();
+
+	_inited = true;
+
+	ModularBackend::initBackend();
+
+	// We have to initialize the graphics manager before the event manager
+	// so the virtual keyboard can be initialized, but we have to add the
+	// graphics manager as an event observer after initializing the event
+	// manager.
+	if (graphicsManagerType == 0)
+		((SurfaceSdlGraphicsManager *)_graphicsManager)->initEventObserver();
+#ifdef USE_OPENGL
+	else if (graphicsManagerType == 1)
+		((OpenGLSdlGraphicsManager *)_graphicsManager)->initEventObserver();
+#endif
+#endif
 
 }
 
 #if defined(USE_TASKBAR)
 void OSystem_SDL::engineInit() {
+#if !defined(DARKGL)
 	// Add the started engine to the list of recent tasks
-	//_taskbarManager->addRecent(ConfMan.getActiveDomainName(), ConfMan.get("description"));
+	_taskbarManager->addRecent(ConfMan.getActiveDomainName(), ConfMan.get("description"));
 
 	// Set the overlay icon the current running engine
-	//_taskbarManager->setOverlayIcon(ConfMan.getActiveDomainName(), ConfMan.get("description"));
+	_taskbarManager->setOverlayIcon(ConfMan.getActiveDomainName(), ConfMan.get("description"));
+#endif
 }
 
 void OSystem_SDL::engineDone() {
+#if !defined(DARKGL)
 	// Remove overlay icon
-	//_taskbarManager->setOverlayIcon("", "");
+	_taskbarManager->setOverlayIcon("", "");
+#endif
 }
 #endif
 

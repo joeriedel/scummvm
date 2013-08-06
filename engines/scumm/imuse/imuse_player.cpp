@@ -194,6 +194,9 @@ int Player::start_seq_sound(int sound, bool reset_vars) {
 
 	_parser->setMidiDriver(this);
 	_parser->property(MidiParser::mpSmartJump, 1);
+#if defined(DARKGL)
+//	_parser->property(MidiParser::mpAutoLoop, 1);
+#endif
 	_parser->loadMusic(ptr, 0);
 	_parser->setTrack(_track_index);
 
@@ -286,6 +289,9 @@ void Player::send(uint32 b) {
 
 		switch (param1) {
 		case 0: // Bank select. Not supported
+#if defined(DARKGL)
+		case 32:
+#endif
 			break;
 		case 1: // Modulation Wheel
 			part->modulationWheel(param2);
@@ -325,7 +331,12 @@ void Player::send(uint32 b) {
 			part->allNotesOff();
 			break;
 		default:
+#if defined(DARKGL)
+			debug("Player::send(): Invalid control change %d", param1);
+			break;
+#else
 			error("Player::send(): Invalid control change %d", param1);
+#endif
 		}
 		break;
 
@@ -1018,8 +1029,13 @@ void Player::fixAfterLoad() {
 }
 
 void Player::metaEvent(byte type, byte *msg, uint16 len) {
-	if (type == 0x2F)
+	if (type == 0x2F) {
+#if defined(DARKGL)
+		sysEx((const byte*)"\x7D\x03\x65\x6f\x74\x0", 6);
+#else
 		clear();
+#endif
+	}
 }
 
 

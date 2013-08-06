@@ -44,7 +44,11 @@ _centerPitchWheelOnUnload(false),
 _sendSustainOffOnNotesOff(false),
 _numTracks(0),
 _activeTrack(255),
-_abortParse(0) {
+_abortParse(0) 
+#if defined(DARKGL)
+, _lastNoteTick(0)
+#endif
+{
 	memset(_activeNotes, 0, sizeof(_activeNotes));
 	memset(_tracks, 0, sizeof(_tracks));
 	_nextEvent.start = NULL;
@@ -169,6 +173,34 @@ void MidiParser::onTimer() {
 		return;
 
 	_abortParse = false;
+
+#if defined(DARKGL)
+	if (_lastNoteTick == 0) {
+		// haven't acquired the last note position
+		EventInfo currentEvent(_nextEvent);
+		Tracker  currentPosition(_position);
+
+		while (!_abortParse) {
+			EventInfo &info = _nextEvent;
+
+			_position._lastEventTick += info.delta;
+			_position._lastEventTime += info.delta * _psecPerTick;
+
+			if ((info.event != 0xF0) && (info.event != 0xFF)) {
+				_lastNoteTick = _position._lastEventTick;
+			} else if (info.event == 0xFF) {
+				if (info.ext.type == 0x2F)
+					break;
+			}
+
+			parseNextEvent(_nextEvent);
+		}
+
+		_nextEvent = currentEvent;
+		_position = currentPosition;
+	}
+#endif
+
 	endTime = _position._playTime + _timerRate;
 
 	// Scan our hanging notes for any
@@ -204,6 +236,15 @@ void MidiParser::onTimer() {
 			return;
 		}
 
+//#if defined(DARKGL)
+//		if (_position._lastEventTick >= _lastNoteTick) {
+//			// loop!
+//			stopPlaying();
+//			_driver->metaEvent(0x2F, 0, 0);
+//			return;
+//		}
+//#endif
+
 		if (info.event == 0xF0) {
 			// SysEx event
 			// Check for trailing 0xF7 -- if present, remove it.
@@ -221,7 +262,7 @@ void MidiParser::onTimer() {
 					parseNextEvent(_nextEvent);
 				} else {
 					stopPlaying();
-					_driver->metaEvent(info.ext.type, info.ext.data, (uint16)info.length);
+					_driver->metaEvent(info.ext.type, info.ext.data, (uint16)info.length);					
 				}
 				return;
 			} else if (info.ext.type == 0x51) {

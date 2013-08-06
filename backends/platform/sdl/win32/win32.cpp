@@ -60,21 +60,22 @@ void OSystem_Win32::init() {
 }
 
 void OSystem_Win32::initBackend() {
+#if !defined(DARKGL)
 	// Console window is enabled by default on Windows
-	//ConfMan.registerDefault("console", true);
+	ConfMan.registerDefault("console", true);
 
-	//// Enable or disable the window console window
-	//if (ConfMan.getBool("console")) {
-	//	if (AllocConsole()) {
-	//		freopen("CONIN$","r",stdin);
-	//		freopen("CONOUT$","w",stdout);
-	//		freopen("CONOUT$","w",stderr);
-	//	}
-	//	SetConsoleTitle("ScummVM Status Window");
-	//} else {
-	//	FreeConsole();
-	//}
-
+	// Enable or disable the window console window
+	if (ConfMan.getBool("console")) {
+		if (AllocConsole()) {
+			freopen("CONIN$","r",stdin);
+			freopen("CONOUT$","w",stdout);
+			freopen("CONOUT$","w",stderr);
+		}
+		SetConsoleTitle("ScummVM Status Window");
+	} else {
+		FreeConsole();
+	}
+#endif
 	// Create the savefile manager
 	if (_savefileManager == 0)
 		_savefileManager = new WindowsSaveFileManager();

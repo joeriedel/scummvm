@@ -288,6 +288,10 @@ protected:
 	                        ///< simulated events in certain formats.
 	bool   _abortParse;    ///< If a jump or other operation interrupts parsing, flag to abort.
 
+#if defined(DARKGL)
+	uint32 _lastNoteTick; // Dark Forces music has a time delay between the last note and 0x2F (end track)
+#endif
+
 protected:
 	static uint32 readVLQ(byte * &data);
 	virtual void resetTracking();

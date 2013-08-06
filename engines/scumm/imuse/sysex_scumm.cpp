@@ -35,6 +35,10 @@
 #define SYSEX_CALLBACK_FUNCTION sysexHandler_Scumm
 #include "scumm/imuse/imuse_internal.h"
 
+#if defined(DARKGL)
+#include "common/debug.h"
+#endif
+
 namespace Scumm {
 
 void sysexHandler_Scumm(Player *player, const byte *msg, uint16 len) {
@@ -204,7 +208,11 @@ void sysexHandler_Scumm(Player *player, const byte *msg, uint16 len) {
 		break;
 
 	default:
+#if defined(DARKGL)
+		debug("Unknown SysEx command %d", (int)code);
+#else
 		error("Unknown SysEx command %d", (int)code);
+#endif
 	}
 }
 

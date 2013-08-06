@@ -153,6 +153,9 @@ struct CommandQueue {
 //////////////////////////////////////////////////
 
 class Player : public MidiDriver_BASE {
+#if defined(DARKGL) && defined(DARKGL_EXPOSE_IMUSE_PRIVATES)
+	friend class ::DarkForcesiMuse;
+#else
 	/*
 	 * External SysEx handler functions shall each be defined in
 	 * a separate file. This header file shall be included at the
@@ -161,6 +164,7 @@ class Player : public MidiDriver_BASE {
 	 */
 #ifdef SYSEX_CALLBACK_FUNCTION
 	friend void SYSEX_CALLBACK_FUNCTION(Player *, const byte *, uint16);
+#endif
 #endif
 
 protected:
@@ -377,6 +381,9 @@ class IMuseInternal : public IMuse {
 	friend class Player;
 	friend struct Part;
 
+#if defined(DARKGL) && defined(DARKGL_EXPOSE_IMUSE_PRIVATES)
+	friend class ::DarkForcesiMuse;
+#else
 	/*
 	 * External SysEx handler functions shall each be defined in
 	 * a separate file. This header file shall be included at the
@@ -385,6 +392,7 @@ class IMuseInternal : public IMuse {
 	 */
 #ifdef SYSEX_CALLBACK_FUNCTION
 	friend void SYSEX_CALLBACK_FUNCTION(Player *, const byte *, uint16);
+#endif
 #endif
 
 protected:

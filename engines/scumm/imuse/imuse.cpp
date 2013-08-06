@@ -35,7 +35,9 @@
 #include "scumm/saveload.h"
 #include "scumm/scumm.h"
 
+#if defined(DARKGL)
 extern byte *darkgl_soundbanks[8];
+#endif
 
 namespace Scumm {
 
@@ -113,12 +115,11 @@ byte *IMuseInternal::findStartOfSound(int sound, int ct) {
 		MKTAG('M', 'D', 'p', 'g')
 	};
 
-	byte *ptr = 0;
-	if (g_scumm) {
-		g_scumm->_res->_types[rtSound][sound]._address;
-	} else {
-		ptr = darkgl_soundbanks[sound];
-	}
+#if defined(DARKGL)
+	byte *ptr = darkgl_soundbanks[sound];
+#else
+	byte *ptr = g_scumm->_res->_types[rtSound][sound]._address;
+#endif
 
 	if (ptr == NULL) {
 		debug(1, "IMuseInternal::findStartOfSound(): Sound %d doesn't exist", sound);
@@ -155,14 +156,11 @@ byte *IMuseInternal::findStartOfSound(int sound, int ct) {
 }
 
 bool IMuseInternal::isMT32(int sound) {
-	
-	byte *ptr = 0;
-	if (g_scumm) {
-		ptr = g_scumm->_res->_types[rtSound][sound]._address;
-	} else {
-		ptr = darkgl_soundbanks[sound];
-	}
-
+#if defined(DARKGL)
+	byte *ptr = darkgl_soundbanks[sound];
+#else
+	byte *ptr = g_scumm->_res->_types[rtSound][sound]._address;
+#endif
 	if (ptr == NULL)
 		return false;
 
@@ -204,13 +202,11 @@ bool IMuseInternal::isMT32(int sound) {
 }
 
 bool IMuseInternal::isMIDI(int sound) {
-	byte *ptr = 0;
-	if (g_scumm) {
-		g_scumm->_res->_types[rtSound][sound]._address;
-	} else {
-		ptr = darkgl_soundbanks[sound];
-	}
-
+#if defined(DARKGL)
+	byte *ptr = darkgl_soundbanks[sound];
+#else
+	byte *ptr = g_scumm->_res->_types[rtSound][sound]._address;
+#endif
 	if (ptr == NULL)
 		return false;
 
@@ -247,13 +243,11 @@ bool IMuseInternal::isMIDI(int sound) {
 }
 
 bool IMuseInternal::supportsPercussion(int sound) {
-	byte *ptr = 0;
-	if (g_scumm) {
-		g_scumm->_res->_types[rtSound][sound]._address;
-	} else {
-		ptr = darkgl_soundbanks[sound];
-	}
-
+#if defined(DARKGL)
+	byte *ptr = darkgl_soundbanks[sound];
+#else
+	byte *ptr = g_scumm->_res->_types[rtSound][sound]._address;
+#endif
 	if (ptr == NULL)
 		return false;
 

@@ -44,7 +44,9 @@
 
 #define DETECTOR_TESTING_HACK
 #define UPGRADE_ALL_TARGETS_HACK
+#if defined(DARKGL)
 #define DISABLE_COMMAND_LINE
+#endif
 
 namespace Base {
 
